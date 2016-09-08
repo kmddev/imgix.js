@@ -1,4 +1,4 @@
-/*! http://www.imgix.com imgix.js - v2.2.1 - 2016-04-03 
+/*! http://www.imgix.com imgix.js - v2.2.4 - 2016-09-09 
  _                    _             _
 (_)                  (_)           (_)
  _  _ __ ___    __ _  _ __  __      _  ___
@@ -28,7 +28,7 @@
 		}
 
 		// filter polyfill: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter
-		if (!Array.prototype.filter) {
+		if (!Array.prototype.filter || Array.prototype.filter.name == 'findAll') {
 			Array.prototype.filter = function(fun/*, thisArg*/) {
 				if (this === void 0 || this === null) {
 					throw new TypeError();
@@ -269,7 +269,7 @@ var root = this;
  * @namespace imgix
  */
 var imgix = {
-  version: '2.2.1'
+  version: '2.2.4'
 };
 
 // expose imgix to browser or node
@@ -305,10 +305,22 @@ imgix.isImageElement = function (el) {
  */
 imgix.setElementImageAfterLoad = function (el, imgUrl, callback) {
   var img = new Image();
-  img.onload = function () {
+  img.onload = img.onerror = function () {
+    var isImageElement = imgix.isImageElement(el);
+    if (isImageElement) {
+      el.onload = img.onerror = function () {
+        if (typeof callback === 'function') {
+          callback(el, imgUrl);
+        }
+      };
+    }
+
     imgix.setElementImage(el, imgUrl);
-    if (typeof callback === 'function') {
-      callback(el, imgUrl);
+
+    if (!isImageElement) {
+      if (typeof callback === 'function') {
+        callback(el, imgUrl);
+      }
     }
   };
   if (el.hasAttribute('crossorigin')) {
@@ -1447,7 +1459,7 @@ imgix.buildUrl = function (parsed) {
 
     // unique only
     parsed.params = parsed.params.filter(function (value, index, self) {
-      return self.indexOf(value) === index;
+       return self[index] === value;
     });
 
     // sort
@@ -1536,7 +1548,7 @@ var fluidDefaults = {
   lazyLoadColor: null,
   lazyLoadOffsetVertical: 20,
   lazyLoadOffsetHorizontal: 20,
-  lazyLoadScrollContainers: [window],
+  lazyLoadScrollContainers: [typeof window === 'undefined' ? null : window],
   throttle: 200,
   maxHeight: 5000,
   maxWidth: 5000,
