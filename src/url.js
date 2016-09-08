@@ -553,7 +553,7 @@ imgix.buildUrl = function (parsed) {
 
     // unique only
     parsed.params = parsed.params.filter(function (value, index, self) {
-      return self.indexOf(value) === index;
+       return self[index] === value;
     });
 
     // sort
