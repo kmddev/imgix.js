@@ -552,9 +552,13 @@ imgix.buildUrl = function (parsed) {
     });
 
     // unique only
-    parsed.params = parsed.params.filter(function (value, index, self) {
-       return self[index] === value;
-    });
+    if (typeof Prototype == "undefined") {
+      parsed.params = parsed.params.filter(function (value, index, self) {
+        return self[index] === value;
+      });
+    } else {
+      parsed.params = parsed.params.uniq();
+    }
 
     // sort
     parsed.params = parsed.params.sort(function (a, b) {
