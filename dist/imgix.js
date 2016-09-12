@@ -1,4 +1,4 @@
-/*! http://www.imgix.com imgix.js - v2.2.1 - 2016-04-03 
+/*! http://www.imgix.com imgix.js - v2.2.1 - 2016-09-12 
  _                    _             _
 (_)                  (_)           (_)
  _  _ __ ___    __ _  _ __  __      _  ___
@@ -1447,7 +1447,7 @@ imgix.buildUrl = function (parsed) {
 
     // unique only
     parsed.params = parsed.params.filter(function (value, index, self) {
-      return self.indexOf(value) === index;
+       return self[index] === value;
     });
 
     // sort
